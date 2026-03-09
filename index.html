@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coverage Checker - Ste's Whosonline app</title>
+  <style>
+    :root {
+      --online: #1a7f37;
+      --upcoming: #c97a00;
+      --offline: #b3261e;
+      --card-bg: #ffffff;
+      --page-bg: #f4f6fb;
+      --border: #dde3f0;
+      --text-main: #222;
+      --text-muted: #6b7280;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: var(--page-bg);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    h1 {
+      margin: 0 0 4px 0;
+      font-size: 32px;
+    }
+
+    .subheader {
+      margin: 0 0 16px 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .link-row {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .link-row a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .link-row a:hover {
+      text-decoration: underline;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr);
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .cards {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px 18px 14px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+      border: 1px solid var(--border);
+    }
+
+    .card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4f46e5;
+      border: 1px solid #e0e7ff;
+    }
+
+    #status {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 4px 0 0 0;
+    }
+
+    li {
+      padding: 4px 0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon {
+      width: 18px;
+      text-align: centre;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .online-item {
+      color: var(--online);
+      font-weight: 500;
+    }
+
+    .online-item .detail {
+      color: #15803d;
+      font-weight: 400;
+    }
+
+    .upcoming-item {
+      color: var(--upcoming);
+      font-weight: 500;
+    }
+
+    .upcoming-item .detail {
+      color: #b45309;
+      font-weight: 400;
+    }
+
+    .offline-item {
+      color: var(--offline);
+      font-weight: 500;
+    }
+
+    .tomorrow-item {
+      color: #1d4ed8;
+      font-weight: 500;
+    }
+
+    .name {
+      font-weight: 600;
+    }
+
+    .detail {
+      font-size: 13px;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .footer a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .ooo-section-label {
+      margin-top: 4px;
+      margin-bottom: 2px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .team-divider {
+      display: block;
+      padding: 10px 0 4px 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <h1>Support Coverage Checker</h1>
+    <p class="subheader">
+      Quick view of who is online now, who is coming online next, and who will be online at this time tomorrow.
+    </p>
+
+    <p class="link-row">
+      📘 Need help using this app? Read the full guide here:
+      <a href="https://www.theguardian.com" target="_blank" rel="noreferrer">
+        “Update link with the Guru card once ready"
+      </a>
+    </p>
+
+    <div id="status">Loading rota...</div>
+
+    <div id="teamFilterContainer" style="display:none; margin: 0 0 16px 0;">
+      <label for="teamFilter" style="font-size:13px; color: var(--text-muted); margin-right:8px;">Team:</label>
+      <select id="teamFilter" style="font-size:13px; padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:#ffffff;"></select>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Currently Online</span>
+          <span class="badge">Live</span>
+        </div>
+        <ul id="onlineList"></ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Coming online in the next 24 hours</span>
+          <span class="badge">Next up</span>
+        </div>
+        <ul id="nextOnlineList"></ul>
+      </div>
+
+      <div class="card full-width">
+        <div class="card-header">
+          <span class="card-title">Tomorrow at this time will be online</span>
+          <span class="badge">+24h</span>
+        </div>
+        <ul id="tomorrowList"></ul>
+      </div>
+
+      <div class="card full-width">
+        <div class="card-header">
+          <span class="card-title">Out of office</span>
+          <span class="badge">OOO</span>
+        </div>
+
+        <div class="ooo-section-label">OOO today</div>
+        <ul id="oooTodayList"></ul>
+
+        <div class="ooo-section-label" style="margin-top:10px;">OOO at this time tomorrow</div>
+        <ul id="oooTomorrowList"></ul>
+      </div>
+    </div>
+
+    <p class="footer">
+  Need to make changes to your schedule, or you are going on PTO?
+  Please update your schedule here →
+  <a href="https://docs.google.com/spreadsheets/d/1etPlfG5kY_9mykUSulZouQ9aK_L67j1qeEbOWrhAAwc/edit?gid=0#gid=0"
+     target="_blank" rel="noreferrer">
+    Team shifts and OOO sheet
+  </a>.
+</p>
+
+<p class="footer">
+  For issues or enquiries about this app, feel free to reach out to Ste.
+</p>
+  </div>
+
+<script>
+  const SHEET_ID = "1etPlfG5kY_9mykUSulZouQ9aK_L67j1qeEbOWrhAAwc";
+  const SHEET_NAME = "ALL";
+
+  let rota = [];
+
+  const TEAM_FIELD = "Team";
+  const TEAM_UNASSIGNED = "Team unassigned";
+  const ALL_TEAMS_LABEL = "All teams";
+  let selectedTeam = ALL_TEAMS_LABEL;
+  let availableTeams = [];
+
+  function normStr(s) {
+    return String(s || "").trim().toLowerCase();
+  }
+
+  function getTeam(memberRow) {
+    const raw = memberRow?.[TEAM_FIELD] ?? memberRow?.Team ?? memberRow?.team ?? "";
+    const t = String(raw || "").trim();
+    return t ? t : TEAM_UNASSIGNED;
+  }
+
+  function sortTeamsAlphaCaseInsensitive(teams) {
+    const unique = Array.from(new Set(teams.map(t => String(t || "").trim()))).filter(Boolean);
+    const filtered = unique.filter(t => normStr(t) !== normStr(TEAM_UNASSIGNED));
+    filtered.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    if (unique.some(t => normStr(t) === normStr(TEAM_UNASSIGNED))) {
+      filtered.push(TEAM_UNASSIGNED);
+    }
+    return filtered;
+  }
+
+  function teamMatches(a, b) {
+    return normStr(a) === normStr(b);
+  }
+
+  function parseTime(val) {
+    if (val === null || val === undefined || val === "") return null;
+
+    if (typeof val === "string" && val.startsWith("Date(")) {
+      const m = val.match(/Date\(\d+,\d+,\d+,(\d+),(\d+),(\d+)\)/);
+      if (m) {
+        const h = parseInt(m[1], 10);
+        const mins = parseInt(m[2], 10);
+        if (!isNaN(h) && !isNaN(mins)) return h * 60 + mins;
+      }
+    }
+
+    if (Array.isArray(val)) {
+      const h = Number(val[0]);
+      const mins = Number(val[1]);
+      if (!isNaN(h) && !isNaN(mins)) return h * 60 + mins;
+    }
+
+    if (val instanceof Date) {
+      return val.getHours() * 60 + val.getMinutes();
+    }
+
+    if (typeof val === "number") {
+      return Math.round(val * 24 * 60);
+    }
+
+    const str = String(val).trim();
+    const parts = str.split(":");
+    if (parts.length >= 2) {
+      const h = parseInt(parts[0], 10);
+      const mins = parseInt(parts[1], 10);
+      if (!isNaN(h) && !isNaN(mins)) return h * 60 + mins;
+    }
+
+    return null;
+  }
+
+  function parseDateOnly(val) {
+    if (!val) return null;
+
+    if (val instanceof Date) {
+      return new Date(Date.UTC(
+        val.getUTCFullYear(),
+        val.getUTCMonth(),
+        val.getUTCDate()
+      ));
+    }
+
+    const str = String(val).trim();
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+      return new Date(str + "T00:00:00Z");
+    }
+
+    const m = str.match(/Date\((\d+),(\d+),(\d+)/);
+    if (m) {
+      const year = parseInt(m[1], 10);
+      const monthIndex = parseInt(m[2], 10);
+      const day = parseInt(m[3], 10);
+      return new Date(Date.UTC(year, monthIndex, day));
+    }
+
+    return null;
+  }
+
+  function formatDuration(minutes) {
+    if (minutes < 60) return `${minutes}m`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m === 0 ? `${h}h` : `${h}h ${m}m`;
+  }
+
+  function formatDateShort(d) {
+    if (!d) return "";
+    const nowYear = new Date().getUTCFullYear();
+    const opts = d.getUTCFullYear() === nowYear
+      ? { day: "numeric", month: "short" }
+      : { day: "numeric", month: "short", year: "numeric" };
+    return new Intl.DateTimeFormat("en-GB", opts).format(d);
+  }
+
+  function worksOnDay(daysStr, weekdayName) {
+    const allDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const days = (daysStr || "").split(",");
+    const ci = allDays.indexOf(weekdayName);
+    if (ci === -1) return false;
+
+    return days.some(d => {
+      d = d.trim();
+      if (!d) return false;
+
+      if (d.includes("-")) {
+        const [sd, ed] = d.split("-").map(x => x.trim());
+        const si = allDays.indexOf(sd);
+        const ei = allDays.indexOf(ed);
+        if (si === -1 || ei === -1) return false;
+
+        if (si <= ei) {
+          return ci >= si && ci <= ei;
+        } else {
+          return ci >= si || ci <= ei;
+        }
+      }
+
+      return d === weekdayName;
+    });
+  }
+
+function loadRota() {
+  return new Promise((resolve, reject) => {
+    const callback = "cb_" + Date.now();
+
+    window[callback] = function(data) {
+      try {
+        console.log("Google Sheets response:", data);
+
+        if (!data) {
+          reject(new Error("No response returned from Google Sheets."));
+          return;
+        }
+
+        if (data.status !== "ok") {
+          const googleError =
+            data.errors?.map(e => e.detailed_message || e.message).join(" | ") ||
+            "Google Sheets did not return status ok.";
+          reject(new Error(googleError));
+          return;
+        }
+
+        if (!data.table || !data.table.cols || !data.table.rows) {
+          reject(new Error("Google Sheets returned no table data. Check the sheet name and publishing settings."));
+          return;
+        }
+
+        const headers = data.table.cols.map(c => c.label);
+
+        rota = data.table.rows
+          .map(r => {
+            const obj = {};
+            headers.forEach((h, i) => {
+              obj[h] = r.c[i] ? r.c[i].v : "";
+            });
+            return obj;
+          })
+          .filter(r => r.name);
+
+        resolve();
+      } catch (err) {
+        reject(err);
+      } finally {
+        delete window[callback];
+      }
+    };
+
+    const script = document.createElement("script");
+    script.src =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}&tqx=out:json;responseHandler:${callback}`;
+    script.onerror = () => reject(new Error("Failed to load Google Sheets."));
+    document.body.appendChild(script);
+  });
+}
+  function initTeamFilter() {
+    const teamList = rota.map(r => getTeam(r));
+    availableTeams = sortTeamsAlphaCaseInsensitive(teamList);
+
+    const container = document.getElementById("teamFilterContainer");
+    const select = document.getElementById("teamFilter");
+    if (!container || !select) return;
+
+    const hasAtLeastTwoTeams = availableTeams.length >= 2;
+    container.style.display = hasAtLeastTwoTeams ? "block" : "none";
+
+    const params = new URLSearchParams(window.location.search);
+    const requestedTeam = String(params.get("team") || "").trim();
+    if (requestedTeam) {
+      const match = availableTeams.find(t => teamMatches(t, requestedTeam));
+      if (match) selectedTeam = match;
+    }
+
+    select.innerHTML = "";
+    const allOpt = document.createElement("option");
+    allOpt.value = ALL_TEAMS_LABEL;
+    allOpt.textContent = ALL_TEAMS_LABEL;
+    select.appendChild(allOpt);
+
+    availableTeams.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      select.appendChild(opt);
+    });
+
+    select.value = selectedTeam;
+
+    select.addEventListener("change", () => {
+      selectedTeam = select.value || ALL_TEAMS_LABEL;
+      const url = new URL(window.location.href);
+      if (selectedTeam === ALL_TEAMS_LABEL) {
+        url.searchParams.delete("team");
+      } else {
+        url.searchParams.set("team", selectedTeam);
+      }
+      window.history.replaceState({}, "", url);
+      render();
+    });
+  }
+
+  function evaluateCoverageAt(targetDate) {
+    const online = [];
+
+    const targetDay = new Date(Date.UTC(
+      targetDate.getUTCFullYear(),
+      targetDate.getUTCMonth(),
+      targetDate.getUTCDate()
+    ));
+
+    rota.forEach(m => {
+      const name = m.name;
+      const team = getTeam(m);
+      const tz = m.tz;
+      const daysStr = m.days;
+      const start = parseTime(m.start);
+      const end = parseTime(m.end);
+      const firstOOO = parseDateOnly(m["First day OOO"]);
+      const lastOOO = parseDateOnly(m["Last day OOO"]);
+
+      if (!name || !tz || !daysStr || start === null || end === null) return;
+
+      if (firstOOO) {
+        const oooEnd = lastOOO || firstOOO;
+        if (targetDay >= firstOOO && targetDay <= oooEnd) {
+          return;
+        }
+      }
+
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        weekday: "short"
+      }).formatToParts(targetDate);
+
+      const h = parseInt(parts.find(p => p.type === "hour").value, 10);
+      const mnt = parseInt(parts.find(p => p.type === "minute").value, 10);
+      const localMinutes = h * 60 + mnt;
+      const localDay = parts.find(p => p.type === "weekday").value;
+
+      const worksToday = worksOnDay(daysStr, localDay);
+      if (!worksToday) return;
+
+      if (start < end) {
+        if (localMinutes >= start && localMinutes < end) {
+          online.push({ name, team, remaining: end - localMinutes });
+        }
+      } else {
+        if (localMinutes >= start || localMinutes < end) {
+          const remaining = localMinutes >= start
+            ? (24 * 60 - localMinutes) + end
+            : end - localMinutes;
+          online.push({ name, team, remaining });
+        }
+      }
+    });
+
+    return { online };
+  }
+
+  function computeCurrentlyOnline() {
+    return evaluateCoverageAt(new Date());
+  }
+
+  function computeTomorrowSameTimeOnline() {
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    return evaluateCoverageAt(tomorrow).online;
+  }
+
+  function computeOOOForDate(targetDate) {
+    const targetDay = new Date(Date.UTC(
+      targetDate.getUTCFullYear(),
+      targetDate.getUTCMonth(),
+      targetDate.getUTCDate()
+    ));
+    const list = [];
+
+    rota.forEach(m => {
+      const name = m.name;
+      const team = getTeam(m);
+      const firstOOO = parseDateOnly(m["First day OOO"]);
+      const lastOOO = parseDateOnly(m["Last day OOO"]);
+      if (!name || !firstOOO) return;
+
+      const oooEnd = lastOOO || firstOOO;
+      if (targetDay >= firstOOO && targetDay <= oooEnd) {
+        list.push({ name, team, until: oooEnd });
+      }
+    });
+
+    return list;
+  }
+
+  function computeNext24hShifts() {
+    const now = new Date();
+
+    const todayUtc = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate()
+    ));
+    const tomorrowUtc = new Date(todayUtc.getTime() + 86400000);
+
+    const result = [];
+
+    rota.forEach(m => {
+      const name = m.name;
+      const team = getTeam(m);
+      const tz = m.tz;
+      const daysStr = m.days;
+      const start = parseTime(m.start);
+      const firstOOO = parseDateOnly(m["First day OOO"]);
+      const lastOOO = parseDateOnly(m["Last day OOO"]);
+
+      if (!name || !tz || !daysStr || start === null) return;
+
+      const oooEnd = firstOOO ? (lastOOO || firstOOO) : null;
+
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        weekday: "short"
+      }).formatToParts(now);
+
+      const localDay = parts.find(p => p.type === "weekday").value;
+      const localHour = parseInt(parts.find(p => p.type === "hour").value, 10);
+      const localMinute = parseInt(parts.find(p => p.type === "minute").value, 10);
+      const localMinutes = localHour * 60 + localMinute;
+
+      const allDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const localDayIndex = allDays.indexOf(localDay);
+
+      let bestMinutesUntil = null;
+
+      const isOOOToday = firstOOO && todayUtc >= firstOOO && todayUtc <= oooEnd;
+      if (!isOOOToday && worksOnDay(daysStr, localDay) && localMinutes < start) {
+        bestMinutesUntil = start - localMinutes;
+      }
+
+      const tomorrowLocalDay = allDays[(localDayIndex + 1 + 7) % 7];
+      const isOOOTomorrow = firstOOO && tomorrowUtc >= firstOOO && tomorrowUtc <= oooEnd;
+
+      if (!isOOOTomorrow && worksOnDay(daysStr, tomorrowLocalDay)) {
+        const minutesUntilTomorrow = (24 * 60 - localMinutes) + start;
+        if (minutesUntilTomorrow <= 24 * 60) {
+          if (bestMinutesUntil === null || minutesUntilTomorrow < bestMinutesUntil) {
+            bestMinutesUntil = minutesUntilTomorrow;
+          }
+        }
+      }
+
+      if (bestMinutesUntil !== null && bestMinutesUntil >= 0 && bestMinutesUntil <= 24 * 60) {
+        result.push({ name, team, inMinutes: bestMinutesUntil });
+      }
+    });
+
+    return result.sort((a, b) => a.inMinutes - b.inMinutes);
+  }
+
+  function render() {
+    const { online: onlineAll } = computeCurrentlyOnline();
+    const tomorrowOnlineAll = computeTomorrowSameTimeOnline();
+
+    const today = new Date();
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const oooTodayAll = computeOOOForDate(today);
+    const oooTomorrowAll = computeOOOForDate(tomorrow);
+
+    const next24All = computeNext24hShifts();
+
+    const isAllTeams = selectedTeam === ALL_TEAMS_LABEL;
+
+    const filterBySelectedTeam = (items) => {
+      if (isAllTeams) return items;
+      return items.filter(x => teamMatches(x.team, selectedTeam));
+    };
+
+    const renderFlat = (items, renderItem) => items.map(renderItem).join("");
+
+    const renderGrouped = (items, renderItem) => {
+      const groups = new Map();
+      items.forEach(it => {
+        const t = it.team || TEAM_UNASSIGNED;
+        if (!groups.has(t)) groups.set(t, []);
+        groups.get(t).push(it);
+      });
+
+      const orderedTeams = sortTeamsAlphaCaseInsensitive(Array.from(groups.keys()));
+      return orderedTeams
+        .filter(t => (groups.get(t) || []).length > 0)
+        .map(t => {
+          const heading = `<li class="team-divider">${t}</li>`;
+          const body = (groups.get(t) || []).map(renderItem).join("");
+          return heading + body;
+        })
+        .join("");
+    };
+
+    const online = filterBySelectedTeam(onlineAll);
+    const next24 = filterBySelectedTeam(next24All);
+    const tomorrowOnline = filterBySelectedTeam(tomorrowOnlineAll);
+    const oooToday = filterBySelectedTeam(oooTodayAll);
+    const oooTomorrow = filterBySelectedTeam(oooTomorrowAll);
+
+    const onlineList = document.getElementById("onlineList");
+    onlineList.innerHTML =
+      online.length === 0
+        ? `<li class="offline-item"><span class="icon">❌</span><span>No one is online right now.</span></li>`
+        : (isAllTeams ? renderGrouped : renderFlat)(
+            online,
+            x => `
+              <li class="online-item">
+                <span class="icon">✅</span>
+                <span class="name">${x.name}</span>
+                <span class="detail">online for another ${formatDuration(x.remaining)}</span>
+              </li>`
+          );
+
+    const nextList = document.getElementById("nextOnlineList");
+    nextList.innerHTML =
+      next24.length === 0
+        ? `<li class="offline-item"><span class="icon">⚠️</span><span>No one is scheduled to come online in the next 24 hours.</span></li>`
+        : (isAllTeams ? renderGrouped : renderFlat)(
+            next24,
+            x => `
+              <li class="upcoming-item">
+                <span class="icon">🕒</span>
+                <span class="name">${x.name}</span>
+                <span class="detail">will be online in ${formatDuration(x.inMinutes)}</span>
+              </li>`
+          );
+
+    const tomorrowList = document.getElementById("tomorrowList");
+    tomorrowList.innerHTML =
+      tomorrowOnline.length === 0
+        ? `<li class="offline-item"><span class="icon">❌</span><span>No one will be online at this time tomorrow.</span></li>`
+        : (isAllTeams ? renderGrouped : renderFlat)(
+            tomorrowOnline,
+            x => `
+              <li class="tomorrow-item">
+                <span class="icon">📅</span>
+                <span class="name">${x.name}</span>
+              </li>`
+          );
+
+    const oooTodayList = document.getElementById("oooTodayList");
+    oooTodayList.innerHTML =
+      oooToday.length === 0
+        ? `<li class="offline-item"><span class="icon">✅</span><span>No one is OOO today.</span></li>`
+        : (isAllTeams ? renderGrouped : renderFlat)(
+            oooToday,
+            x => `
+              <li class="offline-item">
+                <span class="icon">🏝️</span>
+                <span class="name">${x.name}</span>
+                <span class="detail">OOO until ${formatDateShort(x.until)}</span>
+              </li>`
+          );
+
+    const oooTomorrowList = document.getElementById("oooTomorrowList");
+    oooTomorrowList.innerHTML =
+      oooTomorrow.length === 0
+        ? `<li class="offline-item"><span class="icon">✅</span><span>No one will be OOO tomorrow.</span></li>`
+        : (isAllTeams ? renderGrouped : renderFlat)(
+            oooTomorrow,
+            x => `
+              <li class="offline-item">
+                <span class="icon">🏝️</span>
+                <span class="name">${x.name}</span>
+                <span class="detail">OOO until ${formatDateShort(x.until)}</span>
+              </li>`
+          );
+
+    const viewLabel = isAllTeams ? ALL_TEAMS_LABEL : selectedTeam;
+    document.getElementById("status").textContent = `Rota loaded successfully. Viewing: ${viewLabel}.`;
+  }
+
+  loadRota()
+    .then(() => {
+      initTeamFilter();
+      render();
+    })
+    .catch(err => {
+      document.getElementById("status").textContent = "Error: " + err.message;
+      console.error(err);
+    });
+</script>
+</body>
+</html>
