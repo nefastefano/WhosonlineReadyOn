@@ -1,7 +1,3 @@
-:::writing{variant=“standard” id=“48261”}
-
-Coverage Checker
-
 Coverage Checker is a simple web app that provides a quick view of who is currently working across a distributed team.
 
 It helps teams quickly understand availability across time zones without needing to manually check schedules.
