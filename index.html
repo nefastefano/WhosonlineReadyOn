@@ -6,7 +6,6 @@
   <style>
     :root {
       --online: #1a7f37;
-      --upcoming: #c97a00;
       --offline: #b3261e;
       --card-bg: #ffffff;
       --page-bg: #f4f6fb;
@@ -17,799 +16,953 @@
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      padding: 24px;
-      background: var(--page-bg);
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
+      margin: 0; padding: 24px;
+      background: var(--page-bg); color: var(--text-main);
+      display: flex; justify-content: center;
     }
 
-    .app-container {
-      width: 100%;
-      max-width: 900px;
-    }
+    .app-container { width: 100%; max-width: 960px; }
+    h1 { margin: 0 0 4px 0; font-size: 32px; }
+    .subheader { margin: 0 0 16px 0; font-size: 13px; color: var(--text-muted); }
+    .link-row  { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+    .link-row a { color: #2563eb; text-decoration: none; font-weight: 500; }
+    .link-row a:hover { text-decoration: underline; }
 
-    h1 {
-      margin: 0 0 4px 0;
-      font-size: 32px;
-    }
-
-    .subheader {
-      margin: 0 0 16px 0;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .link-row {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-
-    .link-row a {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .link-row a:hover {
-      text-decoration: underline;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr);
-      gap: 16px;
-    }
-
-    @media (min-width: 900px) {
-      .cards {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      }
-    }
+    .cards { display: grid; grid-template-columns: minmax(0,1.5fr); gap: 16px; }
+    @media (min-width: 900px) { .cards { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
 
     .card {
-      background: var(--card-bg);
-      border-radius: 12px;
+      background: var(--card-bg); border-radius: 12px;
       padding: 16px 18px 14px;
-      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
-      border: 1px solid var(--border);
+      box-shadow: 0 8px 18px rgba(15,23,42,.06); border: 1px solid var(--border);
     }
+    .card.full-width { grid-column: 1 / -1; }
 
-    .card.full-width {
-      grid-column: 1 / -1;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
+    .card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .card-title  { font-size: 18px; font-weight: 600; }
 
     .badge {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #4f46e5;
-      border: 1px solid #e0e7ff;
+      font-size: 11px; padding: 2px 6px; border-radius: 999px;
+      background: #eef2ff; color: #4f46e5; border: 1px solid #e0e7ff;
     }
 
-    #status {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
+    #status { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
 
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 4px 0 0 0;
-    }
+    ul { list-style: none; padding: 0; margin: 4px 0 0 0; }
+    li { padding: 4px 0; font-size: 14px; display: flex; align-items: center; gap: 6px; }
 
-    li {
-      padding: 4px 0;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .icon { width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; }
+    .online-item  { color: var(--online);  font-weight: 500; }
+    .online-item .detail { color: #15803d; font-weight: 400; }
+    .offline-item { color: var(--offline); font-weight: 500; }
+    .tomorrow-item { color: #1d4ed8; font-weight: 500; }
+    .name   { font-weight: 600; }
+    .detail { font-size: 13px; }
 
-    .icon {
-      width: 18px;
-      text-align: centre;
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-
-    .online-item {
-      color: var(--online);
-      font-weight: 500;
-    }
-
-    .online-item .detail {
-      color: #15803d;
-      font-weight: 400;
-    }
-
-    .upcoming-item {
-      color: var(--upcoming);
-      font-weight: 500;
-    }
-
-    .upcoming-item .detail {
-      color: #b45309;
-      font-weight: 400;
-    }
-
-    .offline-item {
-      color: var(--offline);
-      font-weight: 500;
-    }
-
-    .tomorrow-item {
-      color: #1d4ed8;
-      font-weight: 500;
-    }
-
-    .name {
-      font-weight: 600;
-    }
-
-    .detail {
-      font-size: 13px;
-    }
-
-    .footer {
-      margin-top: 18px;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .footer a {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .footer a:hover {
-      text-decoration: underline;
-    }
+    .footer { margin-top: 18px; font-size: 13px; color: var(--text-muted); }
+    .footer a { color: #2563eb; text-decoration: none; font-weight: 500; }
+    .footer a:hover { text-decoration: underline; }
 
     .ooo-section-label {
-      margin-top: 4px;
-      margin-bottom: 2px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
+      margin-top: 4px; margin-bottom: 2px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .02em;
     }
 
     .team-divider {
-      display: block;
-      padding: 10px 0 4px 0;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
+      display: block; padding: 10px 0 4px 0;
+      font-size: 12px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .02em;
     }
+
+    /* ── Shared controls ──────────────────────────── */
+    .card-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+    .card-controls label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+    .ctrl-select {
+      font-size: 12px; padding: 4px 8px; border-radius: 8px;
+      border: 1px solid var(--border); background: #f8f9ff;
+      color: var(--text-main); cursor: pointer;
+    }
+
+    /* ── Rota table ───────────────────────────────── */
+    .rota-scroll { overflow-x: auto; }
+    .rota-table  { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 480px; }
+    .rota-table th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .04em;
+      color: var(--text-muted); padding: 6px 10px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .rota-table td { padding: 7px 10px; vertical-align: middle; border-bottom: 1px solid #f1f3f8; }
+    .rota-table tr:last-child td { border-bottom: none; }
+    .rota-table tr.rota-team-header td {
+      padding: 12px 10px 4px; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .04em;
+      color: var(--text-muted); border-bottom: none;
+    }
+    .rota-table tr.rota-ooo { opacity: .45; }
+    .rota-name-cell { display: flex; align-items: center; gap: 7px; font-weight: 600; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.online  { background: var(--online); }
+    .status-dot.offline { background: #d1d5db; }
+    .status-dot.ooo     { background: #f59e0b; }
+    .tz-abbr { font-size: 11px; color: var(--text-muted); margin-left: 3px; }
+    .next-day-badge {
+      font-size: 10px; color: var(--text-muted);
+      background: #f1f3f8; border-radius: 4px;
+      padding: 1px 4px; margin-left: 3px; vertical-align: middle;
+    }
+    .last-updated { font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: right; }
+
+    /* ── Gantt chart ──────────────────────────────── */
+    .gantt-scroll  { overflow-x: auto; }
+    .gantt-wrapper { display: flex; min-width: 540px; }
+
+    .gantt-names {
+      width: 130px; flex-shrink: 0;
+      padding-right: 10px; box-sizing: border-box;
+    }
+    .gantt-axis-spacer { height: 32px; border-bottom: 1px solid var(--border); }
+    .gantt-name-cell {
+      height: 28px; display: flex; align-items: center;
+      font-size: 12px; font-weight: 500; color: var(--text-main);
+      border-bottom: 1px solid #f1f3f8;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .gantt-name-cell.gantt-team-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .04em; color: var(--text-muted); height: 22px;
+    }
+
+    .gantt-main { flex: 1; min-width: 0; }
+
+    .gantt-axis-row {
+      height: 32px; position: relative;
+      border-bottom: 1px solid var(--border); overflow: hidden;
+    }
+
+    .gantt-body { position: relative; }
+
+    /* layers inside gantt-body */
+    .gantt-bg-layer, .gantt-tick-layer {
+      position: absolute; inset: 0; pointer-events: none;
+    }
+    .gantt-bg-layer   { z-index: 0; }
+    .gantt-tick-layer { z-index: 1; }
+    .gantt-rows       { position: relative; z-index: 2; }
+
+    .gantt-row {
+      height: 28px; position: relative;
+      border-bottom: 1px solid #f1f3f8;
+      display: flex; align-items: center;
+    }
+    .gantt-row.gantt-team-row { height: 22px; }
+
+    .gantt-bar {
+      position: absolute; height: 16px; border-radius: 5px;
+      opacity: .82; transition: opacity .1s; cursor: default;
+      min-width: 2px;
+    }
+    .gantt-bar:hover { opacity: 1; }
+
+    .gantt-now-line {
+      position: absolute; top: 0; bottom: 0; width: 2px;
+      background: #ef4444; z-index: 10; pointer-events: none;
+      transform: translateX(-50%);
+    }
+    .gantt-now-dot {
+      position: absolute; top: 0; left: 50%;
+      transform: translate(-50%, -4px);
+      width: 8px; height: 8px; border-radius: 50%; background: #ef4444;
+    }
+
+    .gantt-legend {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 10px; font-size: 11px; color: var(--text-muted);
+    }
+    .gantt-legend-item { display: flex; align-items: center; gap: 5px; }
+    .gantt-legend-dot  { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
   </style>
 </head>
 <body>
-  <div class="app-container">
-    <h1>Support Coverage Checker</h1>
-    <p class="subheader">
-      Quick view of who is online now, who is coming online next, and who will be online at this time tomorrow.
-    </p>
+<div class="app-container">
+  <h1>Support Coverage Checker</h1>
+  <p class="subheader">Quick view of who is online now, who will be online at this time tomorrow, and the full team rota.</p>
 
-    <p class="link-row">
-      📘 Find our Absence policy:
-      <a href="https://docs.google.com/document/d/1HWjWUE4TVnju0kXBaODGnA9SZiRAc5Bqde8ckrvmAhc/edit?tab=t.0#heading=h.u91jvuqdqopk" target="_blank" rel="noreferrer">
-        “HERE"
-      </a>
-    </p>
+  <p class="link-row">
+    📘 Find our Absence policy:
+    <a href="https://docs.google.com/document/d/1HWjWUE4TVnju0kXBaODGnA9SZiRAc5Bqde8ckrvmAhc/edit?tab=t.0#heading=h.u91jvuqdqopk" target="_blank" rel="noreferrer">"HERE"</a>
+  </p>
 
-    <div id="status">Loading rota...</div>
+  <div id="status">Loading rota...</div>
 
-    <div id="teamFilterContainer" style="display:none; margin: 0 0 16px 0;">
-      <label for="teamFilter" style="font-size:13px; color: var(--text-muted); margin-right:8px;">Team:</label>
-      <select id="teamFilter" style="font-size:13px; padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:#ffffff;"></select>
-    </div>
-
-    <div class="cards">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Currently Online</span>
-          <span class="badge">Live</span>
-        </div>
-        <ul id="onlineList"></ul>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Coming online in the next 24 hours</span>
-          <span class="badge">Next up</span>
-        </div>
-        <ul id="nextOnlineList"></ul>
-      </div>
-
-      <div class="card full-width">
-        <div class="card-header">
-          <span class="card-title">Tomorrow at this time will be online</span>
-          <span class="badge">+24h</span>
-        </div>
-        <ul id="tomorrowList"></ul>
-      </div>
-
-      <div class="card full-width">
-        <div class="card-header">
-          <span class="card-title">Out of office</span>
-          <span class="badge">OOO</span>
-        </div>
-
-        <div class="ooo-section-label">OOO today</div>
-        <ul id="oooTodayList"></ul>
-
-        <div class="ooo-section-label" style="margin-top:10px;">OOO at this time tomorrow</div>
-        <ul id="oooTomorrowList"></ul>
-      </div>
-    </div>
-
-    <p class="footer">
-  Need to make changes to your schedule, or you are going on PTO?
-  Please update your schedule here →
-  <a href="https://docs.google.com/spreadsheets/d/1etPlfG5kY_9mykUSulZouQ9aK_L67j1qeEbOWrhAAwc/edit?gid=0#gid=0"
-     target="_blank" rel="noreferrer">
-    Team shifts and OOO sheet
-  </a>.
-</p>
-
-<p class="footer">
-  For issues or enquiries about this app, feel free to reach out to Ste.
-</p>
+  <div id="teamFilterContainer" style="display:none;margin:0 0 16px 0;">
+    <label for="teamFilter" style="font-size:13px;color:var(--text-muted);margin-right:8px;">Team:</label>
+    <select id="teamFilter" style="font-size:13px;padding:6px 10px;border-radius:10px;border:1px solid var(--border);background:#fff;"></select>
   </div>
 
-<script>
-  const SHEET_ID = "1etPlfG5kY_9mykUSulZouQ9aK_L67j1qeEbOWrhAAwc";
-  const SHEET_NAME = "ALL";
+  <div class="cards">
 
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Currently Online</span>
+        <span class="badge">Live</span>
+      </div>
+      <ul id="onlineList"></ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Coming online in the next 24 hours</span>
+        <span class="badge">Next up</span>
+      </div>
+      <ul id="nextOnlineList"></ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Tomorrow at this time</span>
+        <span class="badge">+24h</span>
+      </div>
+      <ul id="tomorrowList"></ul>
+    </div>
+
+    <div class="card full-width">
+      <div class="card-header">
+        <span class="card-title">Out of office</span>
+        <span class="badge">OOO</span>
+      </div>
+      <div class="ooo-section-label">OOO today</div>
+      <ul id="oooTodayList"></ul>
+      <div class="ooo-section-label" style="margin-top:10px;">OOO at this time tomorrow</div>
+      <ul id="oooTomorrowList"></ul>
+    </div>
+
+    <!-- Rota table -->
+    <div class="card full-width">
+      <div class="card-header">
+        <span class="card-title">Team Rota</span>
+        <span class="badge">Schedule</span>
+        <div class="card-controls">
+          <label>View in:</label>
+          <select class="ctrl-select tz-picker-sync" id="tzPickerRota"></select>
+        </div>
+      </div>
+      <div class="rota-scroll">
+        <table class="rota-table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Days</th><th id="hoursHeader">Hours</th>
+            </tr>
+          </thead>
+          <tbody id="rotaTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Gantt -->
+    <div class="card full-width">
+      <div class="card-header">
+        <span class="card-title">Shift Overlap</span>
+        <span class="badge">Timeline</span>
+        <div class="card-controls">
+          <label>Window:</label>
+          <select class="ctrl-select" id="ganttWindowSelect">
+            <option value="24">24h · 12h before + 12h ahead</option>
+            <option value="48" selected>48h · 12h before + 36h ahead</option>
+            <option value="72">72h · 12h before + 60h ahead</option>
+            <option value="168">7 days · 12h before + rest</option>
+          </select>
+          <label>Timezone:</label>
+          <select class="ctrl-select tz-picker-sync" id="tzPickerGantt"></select>
+        </div>
+        <span id="ganttNowLabel" style="font-size:12px;color:var(--text-muted);margin-left:auto;"></span>
+      </div>
+      <div id="ganttChart"></div>
+    </div>
+
+  </div>
+
+  <p class="last-updated" id="lastUpdated"></p>
+
+  <p class="footer">
+    Need to make changes to your schedule, or going on PTO? Update here →
+    <a href="https://docs.google.com/spreadsheets/d/1etPlfG5kY_9mykUSulZouQ9aK_L67j1qeEbOWrhAAwc/edit?gid=0#gid=0" target="_blank" rel="noreferrer">Team shifts and OOO sheet</a>.
+  </p>
+  <p class="footer">For issues or enquiries, feel free to reach out to Ste.</p>
+</div>
+
+<script>
+  const SHEET_ID   = "1etPlfG5kY_9mykUSulZouQ9aK_L67j1qeEbOWrhAAwc";
+  const SHEET_NAME = "ALL";
   let rota = [];
 
-  const TEAM_FIELD = "Team";
+  const TEAM_FIELD      = "Team";
   const TEAM_UNASSIGNED = "Team unassigned";
   const ALL_TEAMS_LABEL = "All teams";
-  let selectedTeam = ALL_TEAMS_LABEL;
+  let selectedTeam   = ALL_TEAMS_LABEL;
   let availableTeams = [];
 
-  function normStr(s) {
-    return String(s || "").trim().toLowerCase();
+  const BROWSER_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  let displayTz        = BROWSER_TZ;
+  let ganttWindowHours = 48;
+
+  const COMMON_TIMEZONES = [
+    { tz:"Pacific/Honolulu",    label:"Hawaii (HST)"          },
+    { tz:"America/Anchorage",   label:"Alaska (AKST/AKDT)"    },
+    { tz:"America/Los_Angeles", label:"Los Angeles (PT)"       },
+    { tz:"America/Denver",      label:"Denver (MT)"            },
+    { tz:"America/Chicago",     label:"Chicago (CT)"           },
+    { tz:"America/New_York",    label:"New York (ET)"          },
+    { tz:"America/Sao_Paulo",   label:"São Paulo (BRT)"        },
+    { tz:"Europe/London",       label:"London (GMT/BST)"       },
+    { tz:"Europe/Paris",        label:"Paris / Berlin (CET)"   },
+    { tz:"Europe/Helsinki",     label:"Helsinki (EET)"         },
+    { tz:"Europe/Moscow",       label:"Moscow (MSK)"           },
+    { tz:"Asia/Dubai",          label:"Dubai (GST)"            },
+    { tz:"Asia/Karachi",        label:"Karachi (PKT)"          },
+    { tz:"Asia/Kolkata",        label:"Mumbai (IST)"           },
+    { tz:"Asia/Bangkok",        label:"Bangkok (ICT)"          },
+    { tz:"Asia/Manila",         label:"Manila (PHT)"           },
+    { tz:"Asia/Singapore",      label:"Singapore (SGT)"        },
+    { tz:"Asia/Tokyo",          label:"Tokyo (JST)"            },
+    { tz:"Australia/Sydney",    label:"Sydney (AEST/AEDT)"     },
+    { tz:"Pacific/Auckland",    label:"Auckland (NZST/NZDT)"   },
+    { tz:"UTC",                 label:"UTC"                    },
+  ];
+
+  const GANTT_COLORS = [
+    "#6366f1","#0ea5e9","#10b981","#f59e0b","#ef4444",
+    "#8b5cf6","#06b6d4","#84cc16","#f97316","#ec4899",
+  ];
+
+  // ── Helpers ────────────────────────────────────────────────────
+  function normStr(s)   { return String(s||"").trim().toLowerCase(); }
+  function teamMatches(a,b) { return normStr(a)===normStr(b); }
+
+  function getTeam(m) {
+    const raw = m?.[TEAM_FIELD]??m?.Team??m?.team??"";
+    const t = String(raw||"").trim();
+    return t||TEAM_UNASSIGNED;
   }
 
-  function getTeam(memberRow) {
-    const raw = memberRow?.[TEAM_FIELD] ?? memberRow?.Team ?? memberRow?.team ?? "";
-    const t = String(raw || "").trim();
-    return t ? t : TEAM_UNASSIGNED;
-  }
-
-  function sortTeamsAlphaCaseInsensitive(teams) {
-    const unique = Array.from(new Set(teams.map(t => String(t || "").trim()))).filter(Boolean);
-    const filtered = unique.filter(t => normStr(t) !== normStr(TEAM_UNASSIGNED));
-    filtered.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
-    if (unique.some(t => normStr(t) === normStr(TEAM_UNASSIGNED))) {
-      filtered.push(TEAM_UNASSIGNED);
-    }
+  function sortTeamsAlpha(teams) {
+    const unique = Array.from(new Set(teams.map(t=>String(t||"").trim()))).filter(Boolean);
+    const filtered = unique.filter(t=>normStr(t)!==normStr(TEAM_UNASSIGNED));
+    filtered.sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
+    if (unique.some(t=>normStr(t)===normStr(TEAM_UNASSIGNED))) filtered.push(TEAM_UNASSIGNED);
     return filtered;
   }
 
-  function teamMatches(a, b) {
-    return normStr(a) === normStr(b);
-  }
-
   function parseTime(val) {
-    if (val === null || val === undefined || val === "") return null;
-
-    if (typeof val === "string" && val.startsWith("Date(")) {
-      const m = val.match(/Date\(\d+,\d+,\d+,(\d+),(\d+),(\d+)\)/);
-      if (m) {
-        const h = parseInt(m[1], 10);
-        const mins = parseInt(m[2], 10);
-        if (!isNaN(h) && !isNaN(mins)) return h * 60 + mins;
-      }
+    if (val===null||val===undefined||val==="") return null;
+    if (typeof val==="string"&&val.startsWith("Date(")) {
+      const m=val.match(/Date\(\d+,\d+,\d+,(\d+),(\d+),(\d+)\)/);
+      if (m){const h=parseInt(m[1],10),mi=parseInt(m[2],10);if(!isNaN(h)&&!isNaN(mi))return h*60+mi;}
     }
-
-    if (Array.isArray(val)) {
-      const h = Number(val[0]);
-      const mins = Number(val[1]);
-      if (!isNaN(h) && !isNaN(mins)) return h * 60 + mins;
-    }
-
-    if (val instanceof Date) {
-      return val.getHours() * 60 + val.getMinutes();
-    }
-
-    if (typeof val === "number") {
-      return Math.round(val * 24 * 60);
-    }
-
-    const str = String(val).trim();
-    const parts = str.split(":");
-    if (parts.length >= 2) {
-      const h = parseInt(parts[0], 10);
-      const mins = parseInt(parts[1], 10);
-      if (!isNaN(h) && !isNaN(mins)) return h * 60 + mins;
-    }
-
+    if (Array.isArray(val)){const h=Number(val[0]),mi=Number(val[1]);if(!isNaN(h)&&!isNaN(mi))return h*60+mi;}
+    if (val instanceof Date) return val.getHours()*60+val.getMinutes();
+    if (typeof val==="number") return Math.round(val*24*60);
+    const str=String(val).trim(),p=str.split(":");
+    if (p.length>=2){const h=parseInt(p[0],10),mi=parseInt(p[1],10);if(!isNaN(h)&&!isNaN(mi))return h*60+mi;}
     return null;
   }
 
   function parseDateOnly(val) {
     if (!val) return null;
-
-    if (val instanceof Date) {
-      return new Date(Date.UTC(
-        val.getUTCFullYear(),
-        val.getUTCMonth(),
-        val.getUTCDate()
-      ));
-    }
-
-    const str = String(val).trim();
-
-    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-      return new Date(str + "T00:00:00Z");
-    }
-
-    const m = str.match(/Date\((\d+),(\d+),(\d+)/);
-    if (m) {
-      const year = parseInt(m[1], 10);
-      const monthIndex = parseInt(m[2], 10);
-      const day = parseInt(m[3], 10);
-      return new Date(Date.UTC(year, monthIndex, day));
-    }
-
+    if (val instanceof Date) return new Date(Date.UTC(val.getUTCFullYear(),val.getUTCMonth(),val.getUTCDate()));
+    const str=String(val).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return new Date(str+"T00:00:00Z");
+    const m=str.match(/Date\((\d+),(\d+),(\d+)/);
+    if (m) return new Date(Date.UTC(parseInt(m[1],10),parseInt(m[2],10),parseInt(m[3],10)));
     return null;
   }
 
-  function formatDuration(minutes) {
-    if (minutes < 60) return `${minutes}m`;
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return m === 0 ? `${h}h` : `${h}h ${m}m`;
+  function formatDuration(m) {
+    if (m<60) return `${m}m`;
+    const h=Math.floor(m/60),r=m%60;
+    return r===0?`${h}h`:`${h}h ${r}m`;
   }
 
   function formatDateShort(d) {
     if (!d) return "";
-    const nowYear = new Date().getUTCFullYear();
-    const opts = d.getUTCFullYear() === nowYear
-      ? { day: "numeric", month: "short" }
-      : { day: "numeric", month: "short", year: "numeric" };
-    return new Intl.DateTimeFormat("en-GB", opts).format(d);
+    const opts=d.getUTCFullYear()===new Date().getUTCFullYear()
+      ?{day:"numeric",month:"short"}:{day:"numeric",month:"short",year:"numeric"};
+    return new Intl.DateTimeFormat("en-GB",opts).format(d);
   }
 
   function worksOnDay(daysStr, weekdayName) {
-    const allDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const days = (daysStr || "").split(",");
-    const ci = allDays.indexOf(weekdayName);
-    if (ci === -1) return false;
-
-    return days.some(d => {
-      d = d.trim();
-      if (!d) return false;
-
-      if (d.includes("-")) {
-        const [sd, ed] = d.split("-").map(x => x.trim());
-        const si = allDays.indexOf(sd);
-        const ei = allDays.indexOf(ed);
-        if (si === -1 || ei === -1) return false;
-
-        if (si <= ei) {
-          return ci >= si && ci <= ei;
-        } else {
-          return ci >= si || ci <= ei;
-        }
+    const ALL=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const ci=ALL.indexOf(weekdayName);
+    if (ci===-1) return false;
+    return (daysStr||"").split(",").some(d=>{
+      d=d.trim(); if(!d) return false;
+      if (d.includes("-")){
+        const [sd,ed]=d.split("-").map(x=>x.trim());
+        const si=ALL.indexOf(sd),ei=ALL.indexOf(ed);
+        if (si===-1||ei===-1) return false;
+        return si<=ei?(ci>=si&&ci<=ei):(ci>=si||ci<=ei);
       }
-
-      return d === weekdayName;
+      return d===weekdayName;
     });
   }
 
-function loadRota() {
-  return new Promise((resolve, reject) => {
-    const callback = "cb_" + Date.now();
+  function minToHHMM(m) {
+    const t=((m%1440)+1440)%1440;
+    return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0");
+  }
 
-    window[callback] = function(data) {
-      try {
-        console.log("Google Sheets response:", data);
+  // ── Timezone helpers ───────────────────────────────────────────
+  function getUtcOffsetMinutes(tz, date) {
+    const p = new Intl.DateTimeFormat("en-US",{
+      timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",
+      hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false
+    }).formatToParts(date);
+    const g=t=>parseInt(p.find(x=>x.type===t).value,10);
+    return Math.round((Date.UTC(g("year"),g("month")-1,g("day"),g("hour"),g("minute"),g("second"))-date.getTime())/60000);
+  }
 
-        if (!data) {
-          reject(new Error("No response returned from Google Sheets."));
-          return;
-        }
+  function makeShiftDate(dayIdx, timeMinutes, sourceTz) {
+    const now=new Date();
+    const daysAhead=(dayIdx-now.getUTCDay()+7)%7;
+    const ref=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+daysAhead));
+    const approx=new Date(ref.getTime()+timeMinutes*60000);
+    const offset=getUtcOffsetMinutes(sourceTz,approx);
+    return new Date(ref.getTime()+timeMinutes*60000-offset*60000);
+  }
 
-        if (data.status !== "ok") {
-          const googleError =
-            data.errors?.map(e => e.detailed_message || e.message).join(" | ") ||
-            "Google Sheets did not return status ok.";
-          reject(new Error(googleError));
-          return;
-        }
-
-        if (!data.table || !data.table.cols || !data.table.rows) {
-          reject(new Error("Google Sheets returned no table data. Check the sheet name and publishing settings."));
-          return;
-        }
-
-        const headers = data.table.cols.map(c => c.label);
-
-        rota = data.table.rows
-          .map(r => {
-            const obj = {};
-            headers.forEach((h, i) => {
-              obj[h] = r.c[i] ? r.c[i].v : "";
-            });
-            return obj;
-          })
-          .filter(r => r.name);
-
-        resolve();
-      } catch (err) {
-        reject(err);
-      } finally {
-        delete window[callback];
-      }
+  // For rota table: convert a member's shift to displayTz
+  function convertShift(member, targetTz) {
+    const s=parseTime(member.start), e=parseTime(member.end);
+    if (!member.tz||!member.days||s===null||e===null) return null;
+    const ALL=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    let ref=1; for(let i=0;i<7;i++){if(worksOnDay(member.days,ALL[i])){ref=i;break;}}
+    const su=makeShiftDate(ref,s,member.tz);
+    const dur=e>s?e-s:24*60-s+e;
+    const eu=new Date(su.getTime()+dur*60000);
+    const fT=(d,tz)=>new Intl.DateTimeFormat("en-US",{timeZone:tz,hour:"2-digit",minute:"2-digit",hour12:false}).format(d);
+    const fD=(d,tz)=>new Intl.DateTimeFormat("en-US",{timeZone:tz,weekday:"short"}).format(d);
+    const fA=(d,tz)=>new Intl.DateTimeFormat("en-US",{timeZone:tz,timeZoneName:"short"}).formatToParts(d).find(p=>p.type==="timeZoneName")?.value||"";
+    return {
+      startTime:fT(su,targetTz), endTime:fT(eu,targetTz),
+      endNextDay:fD(su,targetTz)!==fD(eu,targetTz),
+      nativeAbbr:fA(su,member.tz), displayAbbr:fA(su,targetTz)
     };
+  }
 
-    const script = document.createElement("script");
-    script.src =
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}&tqx=out:json;responseHandler:${callback}`;
-    script.onerror = () => reject(new Error("Failed to load Google Sheets."));
-    document.body.appendChild(script);
-  });
-}
-  function initTeamFilter() {
-    const teamList = rota.map(r => getTeam(r));
-    availableTeams = sortTeamsAlphaCaseInsensitive(teamList);
+  // Convert a member's working days into the display timezone
+  function convertDaysToDisplayTz(member, targetTz) {
+    const ALL = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const startMins = parseTime(member.start);
+    if (!member.tz || !member.days || startMins === null) return member.days || "—";
+    // If same timezone, no conversion needed
+    if (member.tz === targetTz) return member.days;
 
-    const container = document.getElementById("teamFilterContainer");
-    const select = document.getElementById("teamFilter");
-    if (!container || !select) return;
+    const displayDaySet = new Set();
+    for (let srcDay = 0; srcDay < 7; srcDay++) {
+      if (!worksOnDay(member.days, ALL[srcDay])) continue;
+      const startUtc = makeShiftDate(srcDay, startMins, member.tz);
+      const displayDay = new Intl.DateTimeFormat("en-US", {
+        timeZone: targetTz, weekday: "short"
+      }).format(startUtc);
+      displayDaySet.add(ALL.indexOf(displayDay));
+    }
+    return formatDayIndices(Array.from(displayDaySet).sort((a,b)=>a-b));
+  }
 
-    const hasAtLeastTwoTeams = availableTeams.length >= 2;
-    container.style.display = hasAtLeastTwoTeams ? "block" : "none";
+  function formatDayIndices(indices) {
+    const ALL = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    if (!indices.length) return "—";
+    if (indices.length === 7) return "Daily";
+    if (indices.length === 1) return ALL[indices[0]];
 
-    const params = new URLSearchParams(window.location.search);
-    const requestedTeam = String(params.get("team") || "").trim();
-    if (requestedTeam) {
-      const match = availableTeams.find(t => teamMatches(t, requestedTeam));
-      if (match) selectedTeam = match;
+    // Check plain consecutive range (e.g. Mon-Fri = [1,2,3,4,5])
+    let consecutive = true;
+    for (let i = 1; i < indices.length; i++) {
+      if (indices[i] !== indices[i-1]+1) { consecutive = false; break; }
+    }
+    if (consecutive) return `${ALL[indices[0]]}-${ALL[indices[indices.length-1]]}`;
+
+    // Check wrap-around range (e.g. Sat-Wed = [0,1,2,5,6])
+    let gapCount = 0, gapPos = -1;
+    for (let i = 1; i < indices.length; i++) {
+      if (indices[i] !== indices[i-1]+1) { gapCount++; gapPos = i; }
+    }
+    const wrapGap = indices[0] + 7 - indices[indices.length-1];
+    if (gapCount === 1 && wrapGap === 1) {
+      return `${ALL[indices[gapPos]]}-${ALL[indices[gapPos-1]]}`;
     }
 
-    select.innerHTML = "";
-    const allOpt = document.createElement("option");
-    allOpt.value = ALL_TEAMS_LABEL;
-    allOpt.textContent = ALL_TEAMS_LABEL;
-    select.appendChild(allOpt);
-
-    availableTeams.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t;
-      opt.textContent = t;
-      select.appendChild(opt);
-    });
-
-    select.value = selectedTeam;
-
-    select.addEventListener("change", () => {
-      selectedTeam = select.value || ALL_TEAMS_LABEL;
-      const url = new URL(window.location.href);
-      if (selectedTeam === ALL_TEAMS_LABEL) {
-        url.searchParams.delete("team");
-      } else {
-        url.searchParams.set("team", selectedTeam);
-      }
-      window.history.replaceState({}, "", url);
-      render();
-    });
+    return indices.map(i=>ALL[i]).join(", ");
   }
 
-  function evaluateCoverageAt(targetDate) {
-    const online = [];
-
-    const targetDay = new Date(Date.UTC(
-      targetDate.getUTCFullYear(),
-      targetDate.getUTCMonth(),
-      targetDate.getUTCDate()
-    ));
-
-    rota.forEach(m => {
-      const name = m.name;
-      const team = getTeam(m);
-      const tz = m.tz;
-      const daysStr = m.days;
-      const start = parseTime(m.start);
-      const end = parseTime(m.end);
-      const firstOOO = parseDateOnly(m["First day OOO"]);
-      const lastOOO = parseDateOnly(m["Last day OOO"]);
-
-      if (!name || !tz || !daysStr || start === null || end === null) return;
-
-      if (firstOOO) {
-        const oooEnd = lastOOO || firstOOO;
-        if (targetDay >= firstOOO && targetDay <= oooEnd) {
-          return;
-        }
-      }
-
-      const parts = new Intl.DateTimeFormat("en-US", {
-        timeZone: tz,
-        hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
-        weekday: "short"
-      }).formatToParts(targetDate);
-
-      const h = parseInt(parts.find(p => p.type === "hour").value, 10);
-      const mnt = parseInt(parts.find(p => p.type === "minute").value, 10);
-      const localMinutes = h * 60 + mnt;
-      const localDay = parts.find(p => p.type === "weekday").value;
-
-      const worksToday = worksOnDay(daysStr, localDay);
-      if (!worksToday) return;
-
-      if (start < end) {
-        if (localMinutes >= start && localMinutes < end) {
-          online.push({ name, team, remaining: end - localMinutes });
-        }
-      } else {
-        if (localMinutes >= start || localMinutes < end) {
-          const remaining = localMinutes >= start
-            ? (24 * 60 - localMinutes) + end
-            : end - localMinutes;
-          online.push({ name, team, remaining });
-        }
-      }
-    });
-
-    return { online };
-  }
-
-  function computeCurrentlyOnline() {
-    return evaluateCoverageAt(new Date());
-  }
-
-  function computeTomorrowSameTimeOnline() {
-    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    return evaluateCoverageAt(tomorrow).online;
-  }
-
-  function computeOOOForDate(targetDate) {
-    const targetDay = new Date(Date.UTC(
-      targetDate.getUTCFullYear(),
-      targetDate.getUTCMonth(),
-      targetDate.getUTCDate()
-    ));
-    const list = [];
-
-    rota.forEach(m => {
-      const name = m.name;
-      const team = getTeam(m);
-      const firstOOO = parseDateOnly(m["First day OOO"]);
-      const lastOOO = parseDateOnly(m["Last day OOO"]);
-      if (!name || !firstOOO) return;
-
-      const oooEnd = lastOOO || firstOOO;
-      if (targetDay >= firstOOO && targetDay <= oooEnd) {
-        list.push({ name, team, until: oooEnd });
-      }
-    });
-
-    return list;
-  }
-
-  function computeNext24hShifts() {
+  // Coming online in the next 24h (excludes anyone already online)
+  function computeNext24hShifts(onlineNames) {
     const now = new Date();
-
-    const todayUtc = new Date(Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate()
-    ));
-    const tomorrowUtc = new Date(todayUtc.getTime() + 86400000);
-
+    const ALL = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const todayUtc    = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const tomorrowUtc = new Date(todayUtc.getTime()+86400000);
     const result = [];
 
     rota.forEach(m => {
-      const name = m.name;
-      const team = getTeam(m);
-      const tz = m.tz;
-      const daysStr = m.days;
-      const start = parseTime(m.start);
-      const firstOOO = parseDateOnly(m["First day OOO"]);
-      const lastOOO = parseDateOnly(m["Last day OOO"]);
+      const name=m.name, team=getTeam(m), tz=m.tz, daysStr=m.days;
+      const start=parseTime(m.start);
+      const fOOO=parseDateOnly(m["First day OOO"]), lOOO=parseDateOnly(m["Last day OOO"]);
+      if (!name||!tz||!daysStr||start===null) return;
+      if (onlineNames && onlineNames.has(name)) return; // skip already-online
 
-      if (!name || !tz || !daysStr || start === null) return;
+      const oooEnd = fOOO ? (lOOO||fOOO) : null;
 
-      const oooEnd = firstOOO ? (lastOOO || firstOOO) : null;
-
-      const parts = new Intl.DateTimeFormat("en-US", {
-        timeZone: tz,
-        hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
-        weekday: "short"
+      const parts=new Intl.DateTimeFormat("en-US",{
+        timeZone:tz, hour12:false, hour:"2-digit", minute:"2-digit", weekday:"short"
       }).formatToParts(now);
+      const localDay    =parts.find(p=>p.type==="weekday").value;
+      const localHour   =parseInt(parts.find(p=>p.type==="hour").value,10);
+      const localMinute =parseInt(parts.find(p=>p.type==="minute").value,10);
+      const localMinutes=localHour*60+localMinute;
+      const localDayIdx =ALL.indexOf(localDay);
 
-      const localDay = parts.find(p => p.type === "weekday").value;
-      const localHour = parseInt(parts.find(p => p.type === "hour").value, 10);
-      const localMinute = parseInt(parts.find(p => p.type === "minute").value, 10);
-      const localMinutes = localHour * 60 + localMinute;
+      let best = null;
 
-      const allDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const localDayIndex = allDays.indexOf(localDay);
-
-      let bestMinutesUntil = null;
-
-      const isOOOToday = firstOOO && todayUtc >= firstOOO && todayUtc <= oooEnd;
-      if (!isOOOToday && worksOnDay(daysStr, localDay) && localMinutes < start) {
-        bestMinutesUntil = start - localMinutes;
+      // Starts later today?
+      const isOOOToday = fOOO && todayUtc>=fOOO && todayUtc<=oooEnd;
+      if (!isOOOToday && worksOnDay(daysStr,localDay) && localMinutes<start) {
+        best = start - localMinutes;
       }
 
-      const tomorrowLocalDay = allDays[(localDayIndex + 1 + 7) % 7];
-      const isOOOTomorrow = firstOOO && tomorrowUtc >= firstOOO && tomorrowUtc <= oooEnd;
+      // Starts tomorrow?
+      const tomorrowDay = ALL[(localDayIdx+1+7)%7];
+      const isOOOTomorrow = fOOO && tomorrowUtc>=fOOO && tomorrowUtc<=oooEnd;
+      if (!isOOOTomorrow && worksOnDay(daysStr, tomorrowDay)) {
+        const mins = (24*60 - localMinutes) + start;
+        if (mins <= 24*60 && (best===null || mins<best)) best=mins;
+      }
 
-      if (!isOOOTomorrow && worksOnDay(daysStr, tomorrowLocalDay)) {
-        const minutesUntilTomorrow = (24 * 60 - localMinutes) + start;
-        if (minutesUntilTomorrow <= 24 * 60) {
-          if (bestMinutesUntil === null || minutesUntilTomorrow < bestMinutesUntil) {
-            bestMinutesUntil = minutesUntilTomorrow;
-          }
+      if (best!==null && best>=0 && best<=24*60) {
+        result.push({ name, team, inMinutes: best });
+      }
+    });
+    return result.sort((a,b)=>a.inMinutes-b.inMinutes);
+  }
+
+  // For Gantt: generate all shift occurrences within a UTC time window
+  function getShiftOccurrencesInWindow(member, windowStart, windowEnd) {
+    const ALL=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const s=parseTime(member.start), e=parseTime(member.end);
+    if (!member.tz||!member.days||s===null||e===null) return [];
+    const dur=(e>s?e-s:24*60-s+e)*60000;
+    const results=[];
+
+    // Search from 8 days before windowStart to catch all possible occurrences
+    const searchFrom=new Date(windowStart.getTime()-8*86400000);
+
+    for (let srcDay=0; srcDay<7; srcDay++) {
+      if (!worksOnDay(member.days, ALL[srcDay])) continue;
+      const daysToFirst=(srcDay-searchFrom.getUTCDay()+7)%7;
+      let occDate=new Date(Date.UTC(
+        searchFrom.getUTCFullYear(),searchFrom.getUTCMonth(),
+        searchFrom.getUTCDate()+daysToFirst
+      ));
+      while (occDate.getTime()<windowEnd.getTime()+86400000) {
+        const approx=new Date(occDate.getTime()+s*60000);
+        const offset=getUtcOffsetMinutes(member.tz, approx);
+        const shiftStart=new Date(occDate.getTime()+s*60000-offset*60000);
+        const shiftEnd  =new Date(shiftStart.getTime()+dur);
+        if (shiftEnd>windowStart && shiftStart<windowEnd) {
+          results.push({ shiftStart, shiftEnd });
+        }
+        occDate=new Date(occDate.getTime()+7*86400000);
+      }
+    }
+    return results;
+  }
+
+  // Compute day background spans for Gantt
+  function getDaySpans(windowStart, windowEnd, tz) {
+    const spans=[], wMs=windowEnd.getTime()-windowStart.getTime();
+    const now=new Date();
+    const offset=getUtcOffsetMinutes(tz, windowStart);
+    const localWsMs=windowStart.getTime()+offset*60000;
+    const firstMidnightLocalMs=Math.ceil(localWsMs/86400000)*86400000;
+    let prevMs=firstMidnightLocalMs-offset*60000-86400000; // one day before first midnight
+
+    const todayStr=new Intl.DateTimeFormat("en-CA",{timeZone:tz}).format(now);
+
+    while (prevMs<windowEnd.getTime()) {
+      const nextMs=prevMs+86400000;
+      const sp=((prevMs-windowStart.getTime())/wMs*100);
+      const ep=((nextMs-windowStart.getTime())/wMs*100);
+      if (ep>0 && sp<100) {
+        const mid=new Date((prevMs+nextMs)/2);
+        const dayName=new Intl.DateTimeFormat("en-US",{timeZone:tz,weekday:"short"}).format(mid);
+        const dayStr =new Intl.DateTimeFormat("en-CA",{timeZone:tz}).format(mid);
+        spans.push({
+          startPct:Math.max(0,sp), endPct:Math.min(100,ep),
+          dayName, isToday:dayStr===todayStr
+        });
+      }
+      prevMs=nextMs;
+    }
+    return spans;
+  }
+
+  // Compute axis tick positions
+  function getAxisTicks(windowStart, windowEnd, tz, stepHours) {
+    const ticks=[], wMs=windowEnd.getTime()-windowStart.getTime();
+    const offset=getUtcOffsetMinutes(tz, windowStart);
+    const stepMs=stepHours*3600000;
+    const localWsMs=windowStart.getTime()+offset*60000;
+    const firstAlignedLocal=Math.ceil(localWsMs/stepMs)*stepMs;
+    const firstAlignedUtc=firstAlignedLocal-offset*60000;
+
+    for (let t=firstAlignedUtc; t<=windowEnd.getTime(); t+=stepMs) {
+      const pct=(t-windowStart.getTime())/wMs*100;
+      if (pct<0||pct>100.01) continue;
+      const date=new Date(t);
+      const p=new Intl.DateTimeFormat("en-US",{
+        timeZone:tz,weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false
+      }).formatToParts(date);
+      const h=parseInt(p.find(x=>x.type==="hour").value,10);
+      const m=parseInt(p.find(x=>x.type==="minute").value,10);
+      const isMidnight=(h===0&&m===0);
+      const dayName=p.find(x=>x.type==="weekday").value;
+      const label=isMidnight?dayName:`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+      ticks.push({pct:Math.min(100,pct), label, isMidnight});
+    }
+    return ticks;
+  }
+
+  // ── Data loading ───────────────────────────────────────────────
+  function loadRota() {
+    return new Promise((resolve,reject)=>{
+      const cb="cb_"+Date.now();
+      window[cb]=function(data){
+        try {
+          if (!data){reject(new Error("No response from Google Sheets."));return;}
+          if (data.status!=="ok"){reject(new Error(data.errors?.map(e=>e.detailed_message||e.message).join(" | ")||"Sheets error"));return;}
+          if (!data.table?.cols||!data.table?.rows){reject(new Error("No table data."));return;}
+          const headers=data.table.cols.map(c=>c.label);
+          rota=data.table.rows.map(r=>{
+            const obj={};headers.forEach((h,i)=>{obj[h]=r.c[i]?r.c[i].v:"";});return obj;
+          }).filter(r=>r.name);
+          resolve();
+        } catch(err){reject(err);}finally{delete window[cb];}
+      };
+      const s=document.createElement("script");
+      s.src=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}&tqx=out:json;responseHandler:${cb}`;
+      s.onerror=()=>reject(new Error("Failed to load Google Sheets."));
+      document.body.appendChild(s);
+    });
+  }
+
+  // ── Team filter ────────────────────────────────────────────────
+  function initTeamFilter() {
+    const teamList=rota.map(r=>getTeam(r));
+    availableTeams=sortTeamsAlpha(teamList);
+    const container=document.getElementById("teamFilterContainer");
+    const select   =document.getElementById("teamFilter");
+    if (!container||!select) return;
+    container.style.display=availableTeams.length>=2?"block":"none";
+    const params=new URLSearchParams(window.location.search);
+    const req=String(params.get("team")||"").trim();
+    if (req){const m=availableTeams.find(t=>teamMatches(t,req));if(m)selectedTeam=m;}
+    select.innerHTML="";
+    [ALL_TEAMS_LABEL,...availableTeams].forEach(t=>{
+      const o=document.createElement("option");o.value=t;o.textContent=t;
+      if(t===selectedTeam)o.selected=true;select.appendChild(o);
+    });
+    select.addEventListener("change",()=>{
+      selectedTeam=select.value||ALL_TEAMS_LABEL;
+      const url=new URL(window.location.href);
+      selectedTeam===ALL_TEAMS_LABEL?url.searchParams.delete("team"):url.searchParams.set("team",selectedTeam);
+      window.history.replaceState({},"",url);render();
+    });
+  }
+
+  // ── Shared timezone picker ─────────────────────────────────────
+  function setDisplayTz(tz) {
+    displayTz=tz;
+    document.querySelectorAll(".tz-picker-sync").forEach(sel=>{ sel.value=tz; });
+    render();
+  }
+
+  function initTzPickers() {
+    const inList=COMMON_TIMEZONES.some(t=>t.tz===BROWSER_TZ);
+    const options=inList?COMMON_TIMEZONES:[{tz:BROWSER_TZ,label:`Local (${BROWSER_TZ})`},...COMMON_TIMEZONES];
+
+    document.querySelectorAll(".tz-picker-sync").forEach(sel=>{
+      sel.innerHTML="";
+      options.forEach(({tz,label})=>{
+        const o=document.createElement("option");o.value=tz;o.textContent=label;
+        if(tz===BROWSER_TZ)o.selected=true;sel.appendChild(o);
+      });
+      sel.addEventListener("change",()=>setDisplayTz(sel.value));
+    });
+
+    document.getElementById("ganttWindowSelect").addEventListener("change", e=>{
+      ganttWindowHours=parseInt(e.target.value,10);render();
+    });
+  }
+
+  // ── Coverage evaluation ────────────────────────────────────────
+  function evaluateCoverageAt(targetDate) {
+    const online=[];
+    const targetDay=new Date(Date.UTC(targetDate.getUTCFullYear(),targetDate.getUTCMonth(),targetDate.getUTCDate()));
+    rota.forEach(m=>{
+      const s=parseTime(m.start),e=parseTime(m.end);
+      const fOOO=parseDateOnly(m["First day OOO"]),lOOO=parseDateOnly(m["Last day OOO"]);
+      const team=getTeam(m);
+      if (!m.name||!m.tz||!m.days||s===null||e===null) return;
+      if (fOOO){const oooEnd=lOOO||fOOO;if(targetDay>=fOOO&&targetDay<=oooEnd)return;}
+      const p=new Intl.DateTimeFormat("en-US",{timeZone:m.tz,hour12:false,hour:"2-digit",minute:"2-digit",weekday:"short"}).formatToParts(targetDate);
+      const h=parseInt(p.find(x=>x.type==="hour").value,10);
+      const mn=parseInt(p.find(x=>x.type==="minute").value,10);
+      const lm=h*60+mn, ld=p.find(x=>x.type==="weekday").value;
+      if (s<e) {
+        if(!worksOnDay(m.days,ld))return;
+        if(lm>=s&&lm<e)online.push({name:m.name,team,remaining:e-lm});
+      } else {
+        if(lm>=s){if(worksOnDay(m.days,ld))online.push({name:m.name,team,remaining:(24*60-lm)+e});}
+        else if(lm<e){
+          const A=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+          const y=A[(A.indexOf(ld)-1+7)%7];
+          if(worksOnDay(m.days,y))online.push({name:m.name,team,remaining:e-lm});
         }
       }
-
-      if (bestMinutesUntil !== null && bestMinutesUntil >= 0 && bestMinutesUntil <= 24 * 60) {
-        result.push({ name, team, inMinutes: bestMinutesUntil });
-      }
     });
-
-    return result.sort((a, b) => a.inMinutes - b.inMinutes);
+    return {online};
   }
 
-  function render() {
-    const { online: onlineAll } = computeCurrentlyOnline();
-    const tomorrowOnlineAll = computeTomorrowSameTimeOnline();
+  function computeOOOForDate(targetDate) {
+    const targetDay=new Date(Date.UTC(targetDate.getUTCFullYear(),targetDate.getUTCMonth(),targetDate.getUTCDate()));
+    const list=[];
+    rota.forEach(m=>{
+      const fOOO=parseDateOnly(m["First day OOO"]),lOOO=parseDateOnly(m["Last day OOO"]);
+      if(!m.name||!fOOO)return;
+      const oooEnd=lOOO||fOOO;
+      if(targetDay>=fOOO&&targetDay<=oooEnd)list.push({name:m.name,team:getTeam(m),until:oooEnd});
+    });
+    return list;
+  }
 
-    const today = new Date();
-    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    const oooTodayAll = computeOOOForDate(today);
-    const oooTomorrowAll = computeOOOForDate(tomorrow);
+  // ── Render helpers ─────────────────────────────────────────────
+  const isAllTeams=()=>selectedTeam===ALL_TEAMS_LABEL;
+  const filterTeam=items=>isAllTeams()?items:items.filter(x=>teamMatches(x.team,selectedTeam));
+  const renderFlat=(items,fn)=>items.map(fn).join("");
+  const renderGrouped=(items,fn)=>{
+    const g=new Map();
+    items.forEach(it=>{const t=it.team||TEAM_UNASSIGNED;if(!g.has(t))g.set(t,[]);g.get(t).push(it);});
+    return sortTeamsAlpha(Array.from(g.keys())).filter(t=>g.get(t).length>0)
+      .map(t=>`<li class="team-divider">${t}</li>`+g.get(t).map(fn).join("")).join("");
+  };
 
-    const next24All = computeNext24hShifts();
+  // ── Rota table ─────────────────────────────────────────────────
+  function renderRota(onlineNames, oooNames) {
+    const tbody =document.getElementById("rotaTableBody");
+    const header=document.getElementById("hoursHeader");
+    const nowAbbr=new Intl.DateTimeFormat("en-US",{timeZone:displayTz,timeZoneName:"short"})
+      .formatToParts(new Date()).find(p=>p.type==="timeZoneName")?.value||displayTz;
+    header.textContent=`Hours (${nowAbbr})`;
 
-    const isAllTeams = selectedTeam === ALL_TEAMS_LABEL;
+    const visible=isAllTeams()?rota:rota.filter(m=>teamMatches(getTeam(m),selectedTeam));
+    const groups=new Map();
+    visible.forEach(m=>{const t=getTeam(m);if(!groups.has(t))groups.set(t,[]);groups.get(t).push(m);});
+    const teams=sortTeamsAlpha(Array.from(groups.keys()));
 
-    const filterBySelectedTeam = (items) => {
-      if (isAllTeams) return items;
-      return items.filter(x => teamMatches(x.team, selectedTeam));
-    };
-
-    const renderFlat = (items, renderItem) => items.map(renderItem).join("");
-
-    const renderGrouped = (items, renderItem) => {
-      const groups = new Map();
-      items.forEach(it => {
-        const t = it.team || TEAM_UNASSIGNED;
-        if (!groups.has(t)) groups.set(t, []);
-        groups.get(t).push(it);
+    let rows="";
+    teams.forEach(team=>{
+      if (groups.size>1) rows+=`<tr class="rota-team-header"><td colspan="3">${team}</td></tr>`;
+      (groups.get(team)||[]).forEach(m=>{
+        const isOnline=onlineNames.has(m.name), isOOO=oooNames.has(m.name);
+        const s=parseTime(m.start), e=parseTime(m.end);
+        let timeHtml="—";
+        if (!isOOO && s!==null && e!==null) {
+          if (displayTz===m.tz) {
+            timeHtml=`${minToHHMM(s)} – ${minToHHMM(e)}`;
+          } else {
+            const c=convertShift(m,displayTz);
+            if(c) timeHtml=`${c.startTime} – ${c.endTime}${c.endNextDay?'<span class="next-day-badge">+1d</span>':""}`;
+          }
+        }
+        const dotClass=isOOO?"ooo":isOnline?"online":"offline";
+        rows+=`<tr${isOOO?' class="rota-ooo"':""}>
+          <td><div class="rota-name-cell"><span class="status-dot ${dotClass}"></span>${m.name}${isOOO?" 🏝️":""}</div></td>
+          <td>${convertDaysToDisplayTz(m, displayTz)}</td>
+          <td>${timeHtml}</td>
+        </tr>`;
       });
-
-      const orderedTeams = sortTeamsAlphaCaseInsensitive(Array.from(groups.keys()));
-      return orderedTeams
-        .filter(t => (groups.get(t) || []).length > 0)
-        .map(t => {
-          const heading = `<li class="team-divider">${t}</li>`;
-          const body = (groups.get(t) || []).map(renderItem).join("");
-          return heading + body;
-        })
-        .join("");
-    };
-
-    const online = filterBySelectedTeam(onlineAll);
-    const next24 = filterBySelectedTeam(next24All);
-    const tomorrowOnline = filterBySelectedTeam(tomorrowOnlineAll);
-    const oooToday = filterBySelectedTeam(oooTodayAll);
-    const oooTomorrow = filterBySelectedTeam(oooTomorrowAll);
-
-    const onlineList = document.getElementById("onlineList");
-    onlineList.innerHTML =
-      online.length === 0
-        ? `<li class="offline-item"><span class="icon">❌</span><span>No one is online right now.</span></li>`
-        : (isAllTeams ? renderGrouped : renderFlat)(
-            online,
-            x => `
-              <li class="online-item">
-                <span class="icon">✅</span>
-                <span class="name">${x.name}</span>
-                <span class="detail">online for another ${formatDuration(x.remaining)}</span>
-              </li>`
-          );
-
-    const nextList = document.getElementById("nextOnlineList");
-    nextList.innerHTML =
-      next24.length === 0
-        ? `<li class="offline-item"><span class="icon">⚠️</span><span>No one is scheduled to come online in the next 24 hours.</span></li>`
-        : (isAllTeams ? renderGrouped : renderFlat)(
-            next24,
-            x => `
-              <li class="upcoming-item">
-                <span class="icon">🕒</span>
-                <span class="name">${x.name}</span>
-                <span class="detail">will be online in ${formatDuration(x.inMinutes)}</span>
-              </li>`
-          );
-
-    const tomorrowList = document.getElementById("tomorrowList");
-    tomorrowList.innerHTML =
-      tomorrowOnline.length === 0
-        ? `<li class="offline-item"><span class="icon">❌</span><span>No one will be online at this time tomorrow.</span></li>`
-        : (isAllTeams ? renderGrouped : renderFlat)(
-            tomorrowOnline,
-            x => `
-              <li class="tomorrow-item">
-                <span class="icon">📅</span>
-                <span class="name">${x.name}</span>
-              </li>`
-          );
-
-    const oooTodayList = document.getElementById("oooTodayList");
-    oooTodayList.innerHTML =
-      oooToday.length === 0
-        ? `<li class="offline-item"><span class="icon">✅</span><span>No one is OOO today.</span></li>`
-        : (isAllTeams ? renderGrouped : renderFlat)(
-            oooToday,
-            x => `
-              <li class="offline-item">
-                <span class="icon">🏝️</span>
-                <span class="name">${x.name}</span>
-                <span class="detail">OOO until ${formatDateShort(x.until)}</span>
-              </li>`
-          );
-
-    const oooTomorrowList = document.getElementById("oooTomorrowList");
-    oooTomorrowList.innerHTML =
-      oooTomorrow.length === 0
-        ? `<li class="offline-item"><span class="icon">✅</span><span>No one will be OOO tomorrow.</span></li>`
-        : (isAllTeams ? renderGrouped : renderFlat)(
-            oooTomorrow,
-            x => `
-              <li class="offline-item">
-                <span class="icon">🏝️</span>
-                <span class="name">${x.name}</span>
-                <span class="detail">OOO until ${formatDateShort(x.until)}</span>
-              </li>`
-          );
-
-    const viewLabel = isAllTeams ? ALL_TEAMS_LABEL : selectedTeam;
-    document.getElementById("status").textContent = `Rota loaded successfully. Viewing: ${viewLabel}.`;
+    });
+    tbody.innerHTML=rows;
   }
 
-  loadRota()
-    .then(() => {
-      initTeamFilter();
-      render();
-    })
-    .catch(err => {
-      document.getElementById("status").textContent = "Error: " + err.message;
-      console.error(err);
+  // ── Gantt chart ────────────────────────────────────────────────
+  function renderGantt(onlineNames, oooNames) {
+    const container=document.getElementById("ganttChart");
+    if (!container) return;
+
+    const now        = new Date();
+    const windowStart= new Date(now.getTime()-12*3600000);
+    const windowEnd  = new Date(windowStart.getTime()+ganttWindowHours*3600000);
+    const wMs        = windowEnd.getTime()-windowStart.getTime();
+    const nowPct     = (12/ganttWindowHours*100).toFixed(3); // always at 12h from left
+
+    // Current time label
+    const nowFmt=new Intl.DateTimeFormat("en-US",{
+      timeZone:displayTz,weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false
+    }).format(now);
+    document.getElementById("ganttNowLabel").textContent=`Now: ${nowFmt}`;
+
+    // Axis ticks and day spans
+    const stepHours = ganttWindowHours<=48?6:ganttWindowHours<=96?12:24;
+    const ticks     = getAxisTicks(windowStart, windowEnd, displayTz, stepHours);
+    const daySpans  = getDaySpans(windowStart, windowEnd, displayTz);
+
+    // Team/person data
+    const visible=isAllTeams()?rota:rota.filter(m=>teamMatches(getTeam(m),selectedTeam));
+    const groups=new Map();
+    visible.forEach(m=>{const t=getTeam(m);if(!groups.has(t))groups.set(t,[]);groups.get(t).push(m);});
+    const teams=sortTeamsAlpha(Array.from(groups.keys()));
+    const multiTeam=groups.size>1;
+    const colorMap={};
+    visible.forEach((m,i)=>{colorMap[m.name]=GANTT_COLORS[i%GANTT_COLORS.length];});
+
+    // ── Names column ──
+    let namesHtml=`<div class="gantt-axis-spacer"></div>`;
+    const legendItems=[];
+    teams.forEach(team=>{
+      if(multiTeam) namesHtml+=`<div class="gantt-name-cell gantt-team-label">${team}</div>`;
+      (groups.get(team)||[]).forEach(m=>{
+        const isOOO=oooNames.has(m.name);
+        namesHtml+=`<div class="gantt-name-cell" title="${m.name}">${isOOO?"🏝️ ":""}${m.name}</div>`;
+        legendItems.push({name:m.name, color:isOOO?"#d1d5db":colorMap[m.name]});
+      });
     });
+
+    // ── Axis row ──
+    let axisHtml="";
+    ticks.forEach(tick=>{
+      // Avoid labels clipping at edges
+      const align = tick.pct<5?"left:0;transform:none":tick.pct>95?"right:0;left:auto;transform:none":`left:${tick.pct.toFixed(2)}%;transform:translateX(-50%)`;
+      const style =`position:absolute;top:0;bottom:0;display:flex;align-items:center;${align}`;
+      const txt   =`font-size:${tick.isMidnight?"12":"10"}px;font-weight:${tick.isMidnight?"700":"400"};color:${tick.isMidnight?"var(--text-main)":"var(--text-muted)"};white-space:nowrap;`;
+      axisHtml+=`<div style="${style}"><span style="${txt}">${tick.label}</span></div>`;
+    });
+
+    // ── Background layer (day spans + tick lines) ──
+    let bgHtml="", tickLineHtml="";
+    daySpans.forEach((span,i)=>{
+      const l=span.startPct.toFixed(2), w=(span.endPct-span.startPct).toFixed(2);
+      const bg=span.isToday?"rgba(239,246,255,0.7)":i%2===0?"rgba(248,249,255,0.5)":"transparent";
+      bgHtml+=`<div style="position:absolute;top:0;bottom:0;left:${l}%;width:${w}%;background:${bg};"></div>`;
+    });
+    ticks.forEach(tick=>{
+      const opacity=tick.isMidnight?".15":".07";
+      tickLineHtml+=`<div style="position:absolute;top:0;bottom:0;left:${tick.pct.toFixed(2)}%;width:1px;background:rgba(0,0,0,${opacity});"></div>`;
+    });
+
+    // ── Track rows ──
+    let tracksHtml="";
+    teams.forEach(team=>{
+      if(multiTeam) tracksHtml+=`<div class="gantt-row gantt-team-row"></div>`;
+      (groups.get(team)||[]).forEach(m=>{
+        const isOOO=oooNames.has(m.name);
+        const color=colorMap[m.name];
+        let barsHtml="";
+
+        if (!isOOO) {
+          getShiftOccurrencesInWindow(m, windowStart, windowEnd).forEach(occ=>{
+            const sp=Math.max(0,(occ.shiftStart.getTime()-windowStart.getTime())/wMs*100);
+            const ep=Math.min(100,(occ.shiftEnd.getTime()-windowStart.getTime())/wMs*100);
+            const w=ep-sp;
+            if(w<0.05) return;
+            const fmtTip=d=>new Intl.DateTimeFormat("en-US",{
+              timeZone:displayTz,weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false
+            }).format(d);
+            const tip=`${m.name} · ${fmtTip(occ.shiftStart)} – ${fmtTip(occ.shiftEnd)}`;
+            barsHtml+=`<div class="gantt-bar" style="left:${sp.toFixed(2)}%;width:${w.toFixed(2)}%;background:${color};" title="${tip}"></div>`;
+          });
+        }
+        tracksHtml+=`<div class="gantt-row">${barsHtml}</div>`;
+      });
+    });
+
+    // ── Legend ──
+    const legendHtml=legendItems.map(x=>
+      `<div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:${x.color};"></div><span>${x.name}</span></div>`
+    ).join("");
+
+    container.innerHTML=`
+      <div class="gantt-scroll">
+        <div class="gantt-wrapper">
+          <div class="gantt-names">${namesHtml}</div>
+          <div class="gantt-main">
+            <div class="gantt-axis-row">${axisHtml}</div>
+            <div class="gantt-body">
+              <div class="gantt-bg-layer">${bgHtml}</div>
+              <div class="gantt-tick-layer">${tickLineHtml}</div>
+              <div class="gantt-rows">${tracksHtml}</div>
+              <div class="gantt-now-line" style="left:${nowPct}%;"><div class="gantt-now-dot"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="gantt-legend">${legendHtml}</div>`;
+  }
+
+  // ── Main render ────────────────────────────────────────────────
+  function render() {
+    const now=new Date(), tomorrow=new Date(now.getTime()+86400000);
+    const {online:onlineAll}=evaluateCoverageAt(now);
+    const tomorrowAll       =evaluateCoverageAt(tomorrow).online;
+    const oooTodayAll       =computeOOOForDate(now);
+    const oooTomorrowAll    =computeOOOForDate(tomorrow);
+
+    const online        =filterTeam(onlineAll);
+    const tomorrowOnline=filterTeam(tomorrowAll);
+    const oooToday      =filterTeam(oooTodayAll);
+    const oooTomorrow   =filterTeam(oooTomorrowAll);
+    const grouped       =isAllTeams()?renderGrouped:renderFlat;
+
+    document.getElementById("onlineList").innerHTML=online.length===0
+      ?`<li class="offline-item"><span class="icon">❌</span><span>No one is online right now.</span></li>`
+      :grouped(online,x=>`<li class="online-item"><span class="icon">✅</span><span class="name">${x.name}</span><span class="detail">online for another ${formatDuration(x.remaining)}</span></li>`);
+
+    const onlineNamesEarly=new Set(onlineAll.map(x=>x.name));
+    const next24All=computeNext24hShifts(onlineNamesEarly);
+    const next24=filterTeam(next24All);
+    document.getElementById("nextOnlineList").innerHTML=next24.length===0
+      ?`<li class="offline-item"><span class="icon">💤</span><span>No one else coming online in the next 24 hours.</span></li>`
+      :grouped(next24,x=>`<li class="tomorrow-item"><span class="icon">🕐</span><span class="name">${x.name}</span><span class="detail"> online in ${formatDuration(x.inMinutes)}</span></li>`);
+
+    document.getElementById("tomorrowList").innerHTML=tomorrowOnline.length===0
+      ?`<li class="offline-item"><span class="icon">❌</span><span>No one will be online at this time tomorrow.</span></li>`
+      :grouped(tomorrowOnline,x=>`<li class="tomorrow-item"><span class="icon">📅</span><span class="name">${x.name}</span></li>`);
+
+    document.getElementById("oooTodayList").innerHTML=oooToday.length===0
+      ?`<li class="offline-item"><span class="icon">✅</span><span>No one is OOO today.</span></li>`
+      :grouped(oooToday,x=>`<li class="offline-item"><span class="icon">🏝️</span><span class="name">${x.name}</span><span class="detail">OOO until ${formatDateShort(x.until)}</span></li>`);
+
+    document.getElementById("oooTomorrowList").innerHTML=oooTomorrow.length===0
+      ?`<li class="offline-item"><span class="icon">✅</span><span>No one will be OOO tomorrow.</span></li>`
+      :grouped(oooTomorrow,x=>`<li class="offline-item"><span class="icon">🏝️</span><span class="name">${x.name}</span><span class="detail">OOO until ${formatDateShort(x.until)}</span></li>`);
+
+    document.getElementById("status").textContent=
+      `Rota loaded successfully. Viewing: ${isAllTeams()?ALL_TEAMS_LABEL:selectedTeam}.`;
+
+    const onlineNames=onlineNamesEarly;
+    const oooNames   =new Set(oooTodayAll.map(x=>x.name));
+    renderRota(onlineNames, oooNames);
+    renderGantt(onlineNames, oooNames);
+
+    document.getElementById("lastUpdated").textContent=
+      `Last updated: ${now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
+  }
+
+  // ── Boot ───────────────────────────────────────────────────────
+  loadRota()
+    .then(()=>{ initTeamFilter(); initTzPickers(); render(); setInterval(render,60000); })
+    .catch(err=>{ document.getElementById("status").textContent="Error: "+err.message; console.error(err); });
 </script>
 </body>
 </html>
